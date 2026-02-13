@@ -121,7 +121,7 @@ with left:
 with right:
     st.subheader("Details & Image")
 
-    if not selected:
+    if selected is None or len(selected) == 0:
         st.info("Click a plant in the table to view details.")
     else:
         row = selected[0]
