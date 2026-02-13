@@ -88,9 +88,10 @@ with left:
     st.write(f"Showing {len(filtered)} plants")
 
     # Build AgGrid table
-    gb = GridOptionsBuilder.from_dataframe(
-        st.experimental_data_editor(filtered, disabled=True)
-    )
+    import pandas as pd
+
+    df = pd.DataFrame(filtered)
+    gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_selection("single")
     gb.configure_column("Name", sortable=True, resizable=True)
     gb.configure_column("Scientific", sortable=True, resizable=True)
