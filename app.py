@@ -90,7 +90,10 @@ with left:
     # Build AgGrid table
     import pandas as pd
 
+    # Convert filtered list → DataFrame
     df = pd.DataFrame(filtered)
+
+    # Build AgGrid options
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_selection("single")
     gb.configure_column("Name", sortable=True, resizable=True)
@@ -100,8 +103,9 @@ with left:
 
     grid_options = gb.build()
 
+    # Render AgGrid table
     grid_response = AgGrid(
-        filtered,
+        df,
         gridOptions=grid_options,
         update_mode=GridUpdateMode.SELECTION_CHANGED,
         height=600,
