@@ -1,6 +1,5 @@
 import os
 import re
-
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -18,7 +17,8 @@ def find_image(plant_name: str):
     safe = re.sub(r"[^a-z0-9 ]", "", safe)
     safe = safe.replace(" ", "_")
 
-    image_folder = "images"
+    image_folder = "Images"  # <-- your actual folder name
+
     for ext in ["jpg", "jpeg", "png", "webp"]:
         path = os.path.join(image_folder, f"{safe}.{ext}")
         if os.path.exists(path):
@@ -56,48 +56,38 @@ with left:
     st.subheader("Search & Filter")
 
     filter_choice = st.selectbox("Filter by toxicity", ["All", "Toxic", "Safe"])
-    query = st.text_input("Search plants")
 
+    # Real-time search (no 'press enter' message)
+    quick_search = st.text_input(
+        "Search plants",
+        placeholder="Type to filter instantly..."
+    )
+
+    # Apply toxicity filter
     filtered = []
-    q = query.lower()
-
     for plant in plants:
         if filter_choice == "Toxic" and not plant["toxic"]:
             continue
         if filter_choice == "Safe" and plant["toxic"]:
             continue
 
-        searchable = " ".join([
-            plant["name"],
-            plant["other"],
-            plant["scientific"],
-            plant["family"],
-            "toxic" if plant["toxic"] else "safe",
-        ]).lower()
+        filtered.append({
+            "Name": plant["name"],
+            "Scientific": plant["scientific"],
+            "Family": plant["family"],
+            "Toxicity": "Toxic" if plant["toxic"] else "Safe",
+        })
 
-        if q in searchable:
-            filtered.append({
-                "Name": plant["name"],
-                "Scientific": plant["scientific"],
-                "Family": plant["family"],
-                "Toxicity": "Toxic" if plant["toxic"] else "Safe",
-            })
+    df = pd.DataFrame(filtered)
 
-    st.write(f"Showing {len(filtered)} plants")
-
-    if len(filtered) == 0:
-        df = pd.DataFrame(columns=["Name", "Scientific", "Family", "Toxicity"])
-    else:
-        df = pd.DataFrame(filtered)
-
+    # Build AgGrid with real-time quick filter
     gb = GridOptionsBuilder.from_dataframe(df)
     gb.configure_selection("single")
-    gb.configure_column("Name", sortable=True, resizable=True)
-    gb.configure_column("Scientific", sortable=True, resizable=True)
-    gb.configure_column("Family", sortable=True, resizable=True)
-    gb.configure_column("Toxicity", sortable=True, resizable=True)
+    gb.configure_default_column(filter=True, floatingFilter=True)
+    gb.configure_grid_options(quickFilter=True)
 
     grid_options = gb.build()
+    grid_options["quickFilterText"] = quick_search
 
     grid_response = AgGrid(
         df,
@@ -107,8 +97,8 @@ with left:
         fit_columns_on_grid_load=True,
     )
 
+    # Normalize selection
     raw_selected = grid_response.get("selected_rows", [])
-
     if isinstance(raw_selected, list):
         selected = raw_selected
     else:
@@ -127,6 +117,7 @@ with right:
         row = selected[0]
         name = row["Name"]
 
+        # Find the original plant object
         plant = next(p for p in plants if p["name"] == name)
 
         st.markdown(f"### {plant['name']}")
