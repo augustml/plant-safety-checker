@@ -97,9 +97,12 @@ with left:
         fit_columns_on_grid_load=True,
     )
 
-    # Normalize selection
-    raw_selected = grid_response.get("selected_rows", [])
-    if isinstance(raw_selected, list):
+    # Normalize selection safely
+    raw_selected = grid_response.get("selected_rows")
+
+    if raw_selected is None:
+        selected = []
+    elif isinstance(raw_selected, list):
         selected = raw_selected
     else:
         selected = raw_selected.to_dict("records")
