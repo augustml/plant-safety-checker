@@ -17,7 +17,7 @@ def find_image(plant_name: str):
     safe = re.sub(r"[^a-z0-9 ]", "", safe)
     safe = safe.replace(" ", "_")
 
-    image_folder = "images"  # <-- your actual folder name
+    image_folder = "images"  # <-- matches your repo folder
 
     for ext in ["jpg", "jpeg", "png", "webp"]:
         path = os.path.join(image_folder, f"{safe}.{ext}")
@@ -57,13 +57,13 @@ with left:
 
     filter_choice = st.selectbox("Filter by toxicity", ["All", "Toxic", "Safe"])
 
-    # Real-time search (no 'press enter' message)
+    # REAL-TIME search (no reruns, no 'press enter')
     quick_search = st.text_input(
         "Search plants",
         placeholder="Type to filter instantly..."
     )
 
-    # Apply toxicity filter
+    # Apply toxicity filter only (search handled by AgGrid)
     filtered = []
     for plant in plants:
         if filter_choice == "Toxic" and not plant["toxic"]:
@@ -87,7 +87,7 @@ with left:
     gb.configure_grid_options(quickFilter=True)
 
     grid_options = gb.build()
-    grid_options["quickFilterText"] = quick_search
+    grid_options["quickFilterText"] = quick_search  # <-- instant filtering
 
     grid_response = AgGrid(
         df,
