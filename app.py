@@ -17,7 +17,7 @@ def find_image(plant_name: str):
     safe = re.sub(r"[^a-z0-9 ]", "", safe)
     safe = safe.replace(" ", "_")
 
-    image_folder = "Images"  # <-- your actual folder name
+    image_folder = "images"  # <-- your actual folder name
 
     for ext in ["jpg", "jpeg", "png", "webp"]:
         path = os.path.join(image_folder, f"{safe}.{ext}")
