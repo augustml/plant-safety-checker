@@ -139,6 +139,6 @@ with right:
 
         if img_path:
             img = Image.open(img_path)
-            st.image(img, use_container_width=True)  # <-- updated
+            st.image(img, width="stretch")  # <-- updated
         else:
             st.warning("No image available for this plant.")
