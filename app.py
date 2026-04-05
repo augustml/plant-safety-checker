@@ -92,17 +92,14 @@ with left:
     grid_response = AgGrid(
         df,
         gridOptions=grid_options,
-        update_mode=GridUpdateMode.SELECTION_CHANGED,
+        update_on="selection_changed",
         height=600,
         fit_columns_on_grid_load=True,
     )
 
-    # Normalize selection safely
-    raw_selected = grid_response.get("selected_rows")
-
-    if raw_selected is None:
-        selected = []
-    elif isinstance(raw_selected, list):
+    # Normalize selection
+    raw_selected = grid_response.get("selected_rows", [])
+    if isinstance(raw_selected, list):
         selected = raw_selected
     else:
         selected = raw_selected.to_dict("records")
