@@ -98,11 +98,8 @@ with left:
     )
 
     # Normalize selection
-    raw_selected = grid_response.get("selected_rows", [])
-    if isinstance(raw_selected, list):
-        selected = raw_selected
-    else:
-        selected = raw_selected.to_dict("records")
+    raw_selected = grid_response.get("selected_rows") or []
+selected = raw_selected if isinstance(raw_selected, list) else []
 
 
 # ---------------------------------------------------------
